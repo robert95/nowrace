@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Race</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ race.id }}</td>
+            </tr>
+            <tr>
+                <th>Starttime</th>
+                <td>{% if race.startTime %}{{ race.startTime|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Distance</th>
+                <td>{{ race.distance }}</td>
+            </tr>
+            <tr>
+                <th>Maxrunners</th>
+                <td>{{ race.maxRunners }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('race_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('race_edit', { 'id': race.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}
