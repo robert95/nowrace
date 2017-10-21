@@ -310,5 +310,9 @@ class Company
         $this->contests->add($contest);
         return $this->contests;
     }
+
+    public function getFullName(){
+        return $this->getName();
+    }
 }
 

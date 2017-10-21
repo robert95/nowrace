@@ -291,5 +291,25 @@ class User implements UserInterface
         $this->confirmationToken = $confirmationToken;
     }
 
+    public function getFullName(){
+        if($this->hasRole('ROLE_ADMIN')){
+            return $this->email;
+        }elseif($this->hasRole('ROLE_RUNNER')){
+            return $this->runner->getFullName();
+        }elseif($this->hasRole('ROLE_COMPANY')){
+            return $this->company->getFullName();
+        }
+    }
+
+    public function getRoleName(){
+        if($this->hasRole('ROLE_ADMIN')){
+            return 'Administrator';
+        }elseif($this->hasRole('ROLE_RUNNER')){
+            return 'Zawodnik';
+        }elseif($this->hasRole('ROLE_COMPANY')){
+            return 'Organizator';
+        }
+    }
+
 }
 

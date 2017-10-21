@@ -5,10 +5,10 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
 .login-body{
   background: #76b852; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #76b852, #8DC26F);
-  background: -moz-linear-gradient(right, #76b852, #8DC26F);
-  background: -o-linear-gradient(right, #76b852, #8DC26F);
-  background: linear-gradient(to left, #76b852, #8DC26F);
+  background: -webkit-linear-gradient(right, #3c8dbc, #8DC26F);
+  background: -moz-linear-gradient(right, #3c8dbc, #8DC26F);
+  background: -o-linear-gradient(right, #3c8dbc, #8DC26F);
+  background: linear-gradient(to left, #3c8dbc, #8DC26F);
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,7 +42,7 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
     font-family: "Roboto", sans-serif;
     text-transform: uppercase;
     outline: 0;
-    background: #4CAF50;
+    background: #3c8dbc;
     width: 100%;
     border: 0;
     padding: 15px;
@@ -53,7 +53,7 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
     cursor: pointer;
   }
   .form button:hover,.form button:active,.form button:focus {
-    background: #43A047;
+    background: #1e4e6b;
   }
   .form .message {
     margin: 15px 0 0;
@@ -61,7 +61,7 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
     font-size: 12px;
   }
   .form .message a {
-    color: #4CAF50;
+    color: #3c8dbc;
     text-decoration: none;
   }
   .form .register-form {
@@ -115,4 +115,25 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
     display: inline;
     padding-right: 6px;
   }
+}
+.user-panel{
+  & > .info{
+    position: static;
+    padding-left: 0;
+    max-width: 100%;
+    p{
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+  }
+}
+.nr-top-menu-user{
+  i{
+    margin-left: 7px;
+  }
+}
+
+.nr-top-menu-user-header{
+  height: 80px !important;
 }

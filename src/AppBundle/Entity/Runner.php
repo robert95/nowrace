@@ -313,6 +313,10 @@ class Runner
         $this->raceRunners->add($raceRunner);
         return $this->raceRunners;
     }
+
+    public function getFullName(){
+        return $this->getName().' '.$this->getSurname();
+    }
 }
 
 
