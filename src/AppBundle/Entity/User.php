@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @UniqueEntity(fields="email", message="Ten adres e-mail jest już zajęty")
  */
-class User implements UserInterface, \Serializable
+class User implements UserInterface
 {
     /**
      * @var int
@@ -26,7 +26,7 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message = "Wpsiz hasło")
      * @Assert\Length(min=6, max=4096)
      */
     private $plainPassword;
@@ -42,8 +42,8 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(type="string", length=60, unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
+     * @Assert\NotBlank(message = "Wpisz adres e-mail")
+     * @Assert\Email(message = "Wpisz poprawny adres e-mail")
      */
     private $email;
 
@@ -78,20 +78,29 @@ class User implements UserInterface, \Serializable
     /**
      * @var Runner
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Runner", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Runner", mappedBy="user", cascade={"all"})
      */
     private $runner;
 
     /**
      * @var Company
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Company", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Company", mappedBy="user", cascade={"all"})
      */
     private $company;
 
+    /**
+     * Random string sent to the user email address in order to verify it
+     *
+     * @var string
+     *
+     * @ORM\Column(name="confirmation_token", type="string", nullable=true)
+     */
+    private $confirmationToken;
+
     public function __construct()
     {
-        $this->isActive = true;
+        $this->isActive = false;
         $this->roles = ['ROLE_USER'];
         $this->createdAt = new \DateTime();
     }
@@ -133,7 +142,7 @@ class User implements UserInterface, \Serializable
 
     public function getRoles()
     {
-        return array('ROLE_USER');
+        return $this->roles;
     }
 
     public function setRoles($roles = []){
@@ -195,26 +204,6 @@ class User implements UserInterface, \Serializable
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
-    }
-
-    /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->email,
-            $this->name,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->email,
-            $this->name,
-            ) = unserialize($serialized);
     }
 
     /**
@@ -286,6 +275,21 @@ class User implements UserInterface, \Serializable
         $this->plainPassword = $plainPassword;
     }
 
+    /**
+     * @return string
+     */
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    /**
+     * @param string $confirmationToken
+     */
+    public function setConfirmationToken($confirmationToken)
+    {
+        $this->confirmationToken = $confirmationToken;
+    }
 
 }
 

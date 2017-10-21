@@ -4,12 +4,15 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Company
  *
  * @ORM\Table(name="company")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CompanyRepository")
+ * @UniqueEntity(fields="name", message="Organizator o takiej naziwe już istnieje")
  */
 class Company
 {
@@ -26,6 +29,7 @@ class Company
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank(message = "Wpisz nazwę")
      */
     private $name;
 
@@ -40,6 +44,7 @@ class Company
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message = "Wpisz miasto")
      */
     private $city;
 
@@ -93,7 +98,6 @@ class Company
     {
         $this->contests = new ArrayCollection();
     }
-
 
     /**
      * Get id

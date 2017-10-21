@@ -30,7 +30,7 @@ class Runner
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message = "Wpisz imię")
      */
     private $name;
 
@@ -38,7 +38,7 @@ class Runner
      * @var string
      *
      * @ORM\Column(name="surname", type="string", length=255, nullable=true)
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message = "Wpisz nazwisko")
      */
     private $surname;
 
@@ -53,7 +53,7 @@ class Runner
      * @var \DateTime
      *
      * @ORM\Column(name="birthDate", type="date", nullable=true)
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(message = "Wpisz datę urodzenia")
      */
     private $birthDate;
 
@@ -68,7 +68,6 @@ class Runner
      * @var string
      *
      * @ORM\Column(name="nationality", type="string", length=255, nullable=true)
-     * @Assert\NotBlank()
      */
     private $nationality;
 
@@ -101,6 +100,7 @@ class Runner
     {
         $this->raceRunners = new ArrayCollection();
         $this->gender = self::GENDER_MALE;
+        $this->nationality = 'PL';
     }
 
     /**

@@ -1,0 +1,21 @@
+{% extends ':default:login_base.html.twig' %}
+{% block body %}
+    {{ parent() }}
+    <div class="login-page">
+        <div class="form">
+            <h3>Logowanie</h3>
+            {{ form_start(form, {'attr': {'class': 'login-form', 'novalidate': 'novalidate'}}) }}
+                {{ form_row(form.email, {'label': "Adres email" }) }}
+                {{ form_row(form.password, {'label': "Hasło" }) }}
+                <button type="submit">Zaloguj się!</button>
+                <p class="message">Nie masz konta?<br>
+                    <a href="{{ path('register-runner') }}">Zajestruj się jako zawodnik</a><br>
+                    <a href="{{ path('register-company') }}">Zajestruj się jako organizator</a>
+                </p>
+                <p class="message">Nie pamiętasz hasła?
+                    <a href="{{ path('reset-password') }}">Przypomnij hasło</a>
+                </p>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
