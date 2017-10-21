@@ -27,7 +27,7 @@ class User implements UserInterface
 
     /**
      * @Assert\NotBlank(message = "Wpsiz hasło")
-     * @Assert\Length(min=6, max=4096)
+     * @Assert\Length(min=6, max=4096, minMessage="Hasło za krótkie, minimum 6 znaków")
      */
     private $plainPassword;
 

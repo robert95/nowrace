@@ -15,7 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 /**
@@ -28,34 +30,18 @@ class SecurityController extends Controller
     /**
      * @Route("/login", name="security_login")
      */
-    public function loginAction(Request $request)
+    public function loginAction(Request $request, AuthenticationUtils $authUtils)
     {
-        $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(LoginType::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $user = $em->getRepository(User::class)->findOneByEmail($data['email']);
-            if($user){
-                if($user->isIsActive()){
-                    $encoder = $this->get('security.encoder_factory')->getEncoder($user);
-                    if ($encoder->isPasswordValid($user->getPassword(), $data['password'], null)) {
-                        $this->addFlash('error', 'Błędne hasło!');
-                    }else{
-                        $this->loginUser($user);
-                        return $this->redirectToRoute('homepage');
-                    }
-                }else{
-                    $this->addFlash('error', 'Użytkownik nieaktywny. Kliknij w link aktywacyjny przysłany w mailu');
-                }
-            }else{
-                $this->addFlash('error', 'Nie ma takiego użytkownika');
-            }
+        if($authUtils->getLastAuthenticationError()){
+            $this->addFlash('error', 'Niepoprawne dane');
         }
 
         return $this->render(
             'security/login.html.twig',
-            array('form' => $form->createView())
+            array(
+                'error' => $authUtils->getLastAuthenticationError(),
+                'last_username' => $authUtils->getLastUsername(),
+            )
         );
     }
 
@@ -225,6 +211,23 @@ class SecurityController extends Controller
      */
     public function logoutAction() {
         throw new Exception('This should not be reached!');
+    }
+
+    /**
+     * @Route("/redirect-after-login", name="after_login")
+     */
+    public function redirectAfterLoginAction() {
+        $user = $this->getUser();
+        if($user){
+            if($user->isIsActive()){
+                return $this->redirectToRoute('homepage');
+            }else{
+                $this->addFlash('error', 'Użytkownik nieaktywny. Kliknij w link aktywacyjny przysłany w mailu');
+                return $this->redirectToRoute('security_logout');
+            }
+        }else{
+            return $this->redirectToRoute('security_login');
+        }
     }
 
     /**

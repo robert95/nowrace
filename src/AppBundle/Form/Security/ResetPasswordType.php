@@ -20,6 +20,7 @@ class ResetPasswordType extends AbstractType
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'Hasło'),
                 'second_options' => array('label' => 'Powtórz hasło'),
+                'invalid_message' => "Hasła się nie zgadzają"
             ))
         ;
     }

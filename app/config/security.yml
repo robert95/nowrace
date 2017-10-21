@@ -26,12 +26,15 @@ security:
 
             # https://symfony.com/doc/current/security/form_login_setup.html
             form_login:
-              login_path: /login
+                login_path: security_login
+                check_path: security_login
+                default_target_path: after_login
 
 #            guard:
 #              entry_point: netins.security.login_form_authenticator
 #              authenticators:
 #                - nowrace.security.login_form_authenticator
             logout:
+              invalidate_session: false
               path: /logout
               target: /login
