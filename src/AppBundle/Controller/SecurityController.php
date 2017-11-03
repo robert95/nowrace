@@ -73,7 +73,7 @@ class SecurityController extends Controller
         }
 
         return $this->render(
-            'security/register-driver.html.twig',
+            'security/register-runner.html.twig',
             array('form' => $form->createView())
         );
     }

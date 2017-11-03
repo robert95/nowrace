@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Contest
@@ -26,6 +27,7 @@ class Contest
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=500)
+     * @Assert\NotBlank(message = "Wpisz nazwę zawodów")
      */
     private $name;
 
@@ -40,6 +42,7 @@ class Contest
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message = "Wpisz miasto")
      */
     private $city;
 
@@ -47,6 +50,7 @@ class Contest
      * @var string
      *
      * @ORM\Column(name="postCode", type="string", length=50, nullable=true)
+     * @Assert\NotBlank(message = "Wpisz kod pocztowy")
      */
     private $postCode;
 
@@ -54,6 +58,7 @@ class Contest
      * @var string
      *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message = "Wpisz adres")
      */
     private $street;
 
@@ -89,7 +94,7 @@ class Contest
     /**
      * @var Race[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Race", mappedBy="contest")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Race", mappedBy="contest", cascade={"persist", "remove"})
      */
     private $races;
 
@@ -99,6 +104,7 @@ class Contest
     public function __construct()
     {
         $this->races = new ArrayCollection();
+        $this->country = 'PL';
     }
 
 
@@ -319,6 +325,27 @@ class Contest
     public function addRace(Race $race){
         $this->races->add($race);
         return $this->races;
+    }
+
+    /**
+     * @return Company
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param Company $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
+    }
+
+    public function getAdress(){
+        return $this->city.' '.$this->postCode.''.
+               ', '.$this->street.', '.$this->country;
     }
 }
 

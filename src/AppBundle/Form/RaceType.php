@@ -13,7 +13,12 @@ class RaceType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('startTime')->add('distance')->add('maxRunners')->add('contest')->add('track');
+        $builder
+            ->add('startTime')
+            ->add('distance')
+            ->add('maxRunners')
+            ->add('contest')
+            ->add('track');
     }
     
     /**

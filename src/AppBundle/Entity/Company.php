@@ -97,6 +97,7 @@ class Company
     public function __construct()
     {
         $this->contests = new ArrayCollection();
+        $this->country = 'PL';
     }
 
     /**
@@ -313,6 +314,11 @@ class Company
 
     public function getFullName(){
         return $this->getName();
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }
 

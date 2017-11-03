@@ -137,3 +137,37 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 .nr-top-menu-user-header{
   height: 80px !important;
 }
+
+.profile-page{
+  #runner_profile_gender{
+    padding-left: 30px;
+    .radio{
+      display: inline-block;
+      padding-right: 44px;
+      label{
+        padding-left: 4px;
+      }
+    }
+  }
+}
+
+.nr-empty-block{
+  text-align: center;
+  margin-top: 15%;
+}
+
+.box-header{
+  .box-title{
+    width: 100%;
+  }
+}
+
+.nr_edit_race_category{
+  select{
+    width: 100%;
+  }
+}
+
+.select2-selection__choice{
+  color: black !important;
+}

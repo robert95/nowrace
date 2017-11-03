@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\RaceCategory;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Racecategory controller.
@@ -132,5 +134,32 @@ class RaceCategoryController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+
+    /**
+     * Lists all raceCategory entities.
+     *
+     * @Route("/index/json", name="racecategory_index_json")
+     * @Method("GET")
+     */
+    public function indexJSONAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $resArray = [];
+        $q = $request->get('q') ?  $request->get('q') : '';
+        $categories = $em->getRepository('AppBundle:RaceCategory')->createQueryBuilder('c')
+                        ->where('c.name LIKE :q')
+                        ->setParameter('q', '%'.$q.'%')
+                        ->getQuery()->getResult();
+
+        foreach($categories as $category){
+            $resArray[] = array(
+                'id' => $category->getId(),
+                'text' => $category->getName()
+            );
+        }
+
+        return new JsonResponse($resArray);
     }
 }

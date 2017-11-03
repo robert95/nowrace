@@ -85,5 +85,10 @@ class RaceCategory
     {
         $this->race = $race;
     }
+
+    function __toString()
+    {
+        return $this->name;
+    }
 }
 

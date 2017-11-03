@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Contest;
 use AppBundle\Entity\Race;
+use AppBundle\Form\EditRaceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +62,7 @@ class RaceController extends Controller
     /**
      * Finds and displays a race entity.
      *
-     * @Route("/{id}", name="race_show")
+     * @Route("/show/{id}", name="race_show")
      * @Method("GET")
      */
     public function showAction(Race $race)
@@ -76,7 +78,7 @@ class RaceController extends Controller
     /**
      * Displays a form to edit an existing race entity.
      *
-     * @Route("/{id}/edit", name="race_edit")
+     * @Route("/edit/{id}", name="race_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Race $race)
@@ -101,8 +103,8 @@ class RaceController extends Controller
     /**
      * Deletes a race entity.
      *
-     * @Route("/{id}", name="race_delete")
-     * @Method("DELETE")
+     * @Route("/delete/{id}", name="race_delete")
+     * @Method({"GET", "DELETE"})
      */
     public function deleteAction(Request $request, Race $race)
     {
@@ -132,5 +134,35 @@ class RaceController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Creates a new contest entity.
+     *
+     * @Route("/add-race/{id}", name="race_add")
+     * @Method({"GET", "POST"})
+     */
+    public function addRaceAction(Request $request, Contest $contest)
+    {
+        $race = new Race();
+        $race->setContest($contest);
+
+        $form = $this->createForm(EditRaceType::class, $race);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            dump($form->getData());die;
+            $em->persist($race);
+            $em->flush();
+
+            $this->addFlash('success', 'Wyścig został poprawnie dodany!');
+            return $this->redirectToRoute('contest_edit', array('id' => $contest->getId()));
+        }
+
+        return $this->render('race/add.html.twig', array(
+            'race' => $race,
+            'form' => $form->createView(),
+        ));
     }
 }

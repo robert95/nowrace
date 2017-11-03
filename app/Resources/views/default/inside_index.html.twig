@@ -33,6 +33,9 @@
 
   <link rel="stylesheet" href="{{ asset('build/global.css') }}">
 
+  {% block stylesheet %}
+  {% endblock %}
+
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -87,7 +90,7 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Mój profil</a>
+                  <a href="{{ path("profile_switcher") }}" class="btn btn-default btn-flat">Mój profil</a>
                 </div>
                 <div class="pull-right">
                   <a href="{{ path('security_logout') }}" class="btn btn-default btn-flat">Wyloguj</a>
@@ -125,9 +128,9 @@
             </span>
           </a>
           <ul class="treeview-menu">
-              <li><a href="{{ path('security_login') }}"><i class="fa fa-circle-o"></i> Moje zawody</a></li>
-              <li><a href="{{ path('security_login', {'activeOnly': true }) }}"><i class="fa fa-circle-o"></i> Nadchodzące</a></li>
-              <li><a href="{{ path('security_login') }}"><i class="fa fa-circle-o"></i> Minione</a></li>
+              <li class="{% block myContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Moje zawody</a></li>
+              <li class="{% block activeContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Nadchodzące</a></li>
+              <li class="{% block passContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Minione</a></li>
           </ul>
         </li>
         <li class="{% block statisticClassMenu %}{% endblock %}">
@@ -136,7 +139,7 @@
             </a>
         </li>
         <li class="{% block profileClassMenu %}{% endblock %}">
-            <a href="{{ path('security_login') }}">
+            <a href="{{ path('profile_switcher') }}">
               <i class="fa fa-user"></i> <span>Mój profil</span>
             </a>
         </li>

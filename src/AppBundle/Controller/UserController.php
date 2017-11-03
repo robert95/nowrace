@@ -3,6 +3,10 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Form\CompanyProfileType;
+use AppBundle\Form\RunnerProfileType;
+use AppBundle\Form\Security\RunnerType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +64,7 @@ class UserController extends Controller
     /**
      * Finds and displays a user entity.
      *
-     * @Route("/{id}", name="user_show")
+     * @Route("/show/{id}", name="user_show")
      * @Method("GET")
      */
     public function showAction(User $user)
@@ -76,7 +80,7 @@ class UserController extends Controller
     /**
      * Displays a form to edit an existing user entity.
      *
-     * @Route("/{id}/edit", name="user_edit")
+     * @Route("/edit/{id}", name="user_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, User $user)
@@ -101,7 +105,7 @@ class UserController extends Controller
     /**
      * Deletes a user entity.
      *
-     * @Route("/{id}", name="user_delete")
+     * @Route("/delete/{id}", name="user_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, User $user)
@@ -132,5 +136,67 @@ class UserController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Switch to profile action
+     *
+     * @Route("/profile-switcher", name="profile_switcher")
+     * @Method({"GET", "POST"})
+     */
+    public function profileSwitcherAction(Request $request)
+    {
+        if($this->getUser()->hasRole("ROLE_RUNNER")) return $this->redirectToRoute('user_runner_profile');
+        if($this->getUser()->hasRole("ROLE_COMPANY")) return $this->redirectToRoute('company_profile');
+    }
+
+    /**
+     * Display runner profile
+     *
+     * @Route("/profile", name="user_runner_profile")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_RUNNER')")
+     */
+    public function profileAction(Request $request)
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(RunnerProfileType::class, $user->getRunner());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            $this->addFlash('success', 'Zmiany zostały zapisane!');
+        }
+
+        return $this->render('user/profile.html.twig', array(
+            'user' => $user,
+            'form' => $form->createView(),
+        ));
+    }
+
+    /**
+     * Display company profile
+     *
+     * @Route("/profile-company", name="company_profile")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_COMPANY')")
+     */
+    public function profileCompanyAction(Request $request)
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(CompanyProfileType::class, $user->getCompany());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            $this->addFlash('success', 'Zmiany zostały zapisane!');
+        }
+
+        return $this->render('user/profile-company.html.twig', array(
+            'user' => $user,
+            'form' => $form->createView(),
+        ));
     }
 }

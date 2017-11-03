@@ -53,18 +53,18 @@
             {% set required = false %}
         {%- endif -%}
         <div class="multiple-select-wrapper">
-            <select class="single-select prettyNormalSelect">
-                    <option value="" selected="selected">{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>
-                {%- if preferred_choices|length > 0 -%}
-                    {% set options = preferred_choices %}
-                    {{- block('choice_widget_options') -}}
-                    {%- if choices|length > 0 and separator is not none -%}
-                        <option disabled="disabled">{{ separator }}</option>
-                    {%- endif -%}
-                {%- endif -%}
-                {%- set options = choices -%}
-                {{- block('choice_widget_options') -}}
-            </select>
+            {#<select class="single-select prettyNormalSelect">#}
+                    {#<option value="" selected="selected">{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>#}
+                {#{%- if preferred_choices|length > 0 -%}#}
+                    {#{% set options = preferred_choices %}#}
+                    {#{{- block('choice_widget_options') -}}#}
+                    {#{%- if choices|length > 0 and separator is not none -%}#}
+                        {#<option disabled="disabled">{{ separator }}</option>#}
+                    {#{%- endif -%}#}
+                {#{%- endif -%}#}
+                {#{%- set options = choices -%}#}
+                {#{{- block('choice_widget_options') -}}#}
+            {#</select>#}
             <div class="multiple-select">
                 <div class="multipleselect-overflow"></div>
                 <select {{ block('widget_attributes') }} multiple="multiple" autocomplete="off">

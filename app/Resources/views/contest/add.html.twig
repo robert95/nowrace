@@ -1,0 +1,47 @@
+{% extends(":default:inside_index.html.twig") %}
+{% set pageName = "Moje zawody - dodawanie zawodów" %}
+{% set pageHeader = "Dodawanie zawodów" %}
+{% set submitBtn = "Dodaj zawody" %}
+{% block contestClassMenu %}active{% endblock %}
+{% block myContestsClassMenu %}active{% endblock %}
+{% block main %}
+    {{ parent() }}
+    <div class="row add-contests-page">
+        <div class="col-xs-12 col-sm-6">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ pageHeader }}</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                {{ form_start(form) }}
+                <div class="box-body">
+                    {{ form_row(form.name, {'label': "Nazwa zawodów" }) }}
+                    {{ form_row(form.startTime, {'label': "Data rozpoczęcia" }) }}
+                    {{ form_row(form.endTime, {'label': "Data zakończenia" }) }}
+                    {{ form_row(form.city, {'label': "Miasto" }) }}
+                    {{ form_row(form.postCode, {'label': "Kod pocztowy" }) }}
+                    {{ form_row(form.street, {'label': "Adres" }) }}
+                    {{ form_row(form.country, {'label': "Kraj" }) }}
+                    {{ form_row(form.www, {'label': "Adres strony www" }) }}
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-info pull-right">{{ submitBtn }}</button>
+                </div>
+                <!-- /.box-footer -->
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            {% block rightSide %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+    </script>
+{% endblock %}
+{% block stylesheet %}
+{% endblock %}
