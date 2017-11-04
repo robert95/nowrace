@@ -16,6 +16,7 @@
                 <!-- form start -->
                 {{ form_start(form) }}
                 <div class="box-body">
+                    {{ form_row(form.name, {'label': "Nazwa wyścigu" }) }}
                     {{ form_row(form.startTime, {'label': "Czas startu" }) }}
                     {{ form_row(form.distance, {'label': "Dystans w kilometrach" }) }}
                     {{ form_row(form.maxRunners, {'label': "Maksymalna liczba zawodników" }) }}

@@ -1,21 +1,59 @@
-{% extends 'base.html.twig' %}
-
-{% block body %}
-    <h1>Race edit</h1>
-
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('race_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+{% extends(":default:inside_index.html.twig") %}
+{% set pageName = "Moje zawody - edycja wyścigu" %}
+{% set pageHeader = "Edycja wyścigu" %}
+{% set submitBtn = "Edytuj wyścig" %}
+{% block contestClassMenu %}active{% endblock %}
+{% block myContestsClassMenu %}active{% endblock %}
+{% block main %}
+    {{ parent() }}
+    <div class="row add-contests-page">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ pageHeader }}</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                {{ form_start(form) }}
+                <div class="box-body">
+                    {{ form_row(form.name, {'label': "Nazwa wyścigu" }) }}
+                    {{ form_row(form.startTime, {'label': "Czas startu" }) }}
+                    {{ form_row(form.distance, {'label': "Dystans w kilometrach" }) }}
+                    {{ form_row(form.maxRunners, {'label': "Maksymalna liczba zawodników" }) }}
+                    <div class="nr_edit_race_category">
+                        {{ form_row(form.categories, {'label': "Kategorie zawodników"}) }}
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-info pull-right">{{ submitBtn }}</button>
+                </div>
+                <!-- /.box-footer -->
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ asset('template/plugins/select2/select2.full.min.js') }}"></script>
+    <script src="{{ asset('template/plugins/select2/i18n/pl.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            var tagurl = '{{ path('racecategory_index_json') }}';
+            $("#edit_race_categories").select2({
+                tags: true,
+                ajax: {
+                    url: tagurl,
+                    processResults: function (data, page) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        } );
+    </script>
+{% endblock %}
+{% block stylesheet %}
+    <link href="{{ asset('template/plugins/select2/select2.min.css') }}" rel="stylesheet" />
 {% endblock %}

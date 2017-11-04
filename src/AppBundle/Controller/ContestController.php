@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Contest;
+use AppBundle\Entity\RaceCategory;
 use AppBundle\Form\EditContestType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -55,22 +56,6 @@ class ContestController extends Controller
         return $this->render('contest/new.html.twig', array(
             'contest' => $contest,
             'form' => $form->createView(),
-        ));
-    }
-
-    /**
-     * Finds and displays a contest entity.
-     *
-     * @Route("/show/{id}", name="contest_show")
-     * @Method("GET")
-     */
-    public function showAction(Contest $contest)
-    {
-        $deleteForm = $this->createDeleteForm($contest);
-
-        return $this->render('contest/show.html.twig', array(
-            'contest' => $contest,
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 
@@ -166,6 +151,54 @@ class ContestController extends Controller
     }
 
     /**
+     * Lists all ended contest
+     *
+     * @Route("/ended-contests", name="ended_contests")
+     * @Method("GET")
+     */
+    public function endedContestsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $contests = $em->getRepository('AppBundle:Contest')
+            ->createQueryBuilder('c')
+            ->where('c.endTime <= :today')
+            ->setParameter('today', new \DateTime() )
+            ->orderBy('c.startTime', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $this->render('contest/ended-contests.html.twig', array(
+            'contests' => $contests,
+        ));
+    }
+
+    /**
+     * Lists all active contest
+     *
+     * @Route("/active-contests", name="active_contests")
+     * @Method("GET")
+     */
+    public function activeContestsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $contests = $em->getRepository('AppBundle:Contest')
+            ->createQueryBuilder('c')
+            ->where('c.endTime > :today')
+            ->setParameter('today', new \DateTime() )
+            ->orderBy('c.startTime', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $this->render('contest/active-contests.html.twig', array(
+            'contests' => $contests,
+        ));
+    }
+
+    /**
      * Creates a new contest entity.
      *
      * @Route("/add-contest", name="contest_add")
@@ -219,6 +252,19 @@ class ContestController extends Controller
 
         return $this->render('contest/edit.html.twig', array(
             'form' => $form->createView(),
+            'contest' => $contest,
+        ));
+    }
+
+    /**
+     * Finds and displays a contest entity.
+     *
+     * @Route("/show/{id}", name="contest_show")
+     * @Method("GET")
+     */
+    public function showAction(Contest $contest)
+    {
+        return $this->render('contest/show.html.twig', array(
             'contest' => $contest,
         ));
     }

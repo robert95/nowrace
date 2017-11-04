@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Contest;
 use AppBundle\Entity\Race;
+use AppBundle\Entity\RaceCategory;
 use AppBundle\Form\EditRaceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -152,7 +153,6 @@ class RaceController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            dump($form->getData());die;
             $em->persist($race);
             $em->flush();
 
@@ -161,6 +161,37 @@ class RaceController extends Controller
         }
 
         return $this->render('race/add.html.twig', array(
+            'race' => $race,
+            'form' => $form->createView(),
+        ));
+    }
+
+
+    /**
+     * Edit race entity.
+     *
+     * @Route("/edit-race/{id}", name="race_edit")
+     * @Method({"GET", "POST"})
+     */
+    public function editRaceAction(Request $request, Race $race)
+    {
+        if($race->getContest()->getCompany() != $this->getUser()->getCompany()){
+            return $this->redirectToRoute('company_contests');
+        }
+
+        $form = $this->createForm(EditRaceType::class, $race);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($race);
+            $em->flush();
+
+            $this->addFlash('success', 'Wyścig został poprawnie edytowany!');
+            return $this->redirectToRoute('contest_edit', array('id' => $race->getContest()->getId()));
+        }
+
+        return $this->render('race/edit.html.twig', array(
             'race' => $race,
             'form' => $form->createView(),
         ));

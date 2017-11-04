@@ -23,6 +23,13 @@ class Race
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    private $name;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="startTime", type="datetime")
@@ -54,7 +61,7 @@ class Race
     /**
      * @var RaceCategory[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\RaceCategory", mappedBy="race")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\RaceCategory", inversedBy="races")
      */
     private $categories;
 
@@ -91,6 +98,22 @@ class Race
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**

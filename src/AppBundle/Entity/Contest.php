@@ -95,6 +95,7 @@ class Contest
      * @var Race[]|ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Race", mappedBy="contest", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"startTime" = "ASC"})
      */
     private $races;
 

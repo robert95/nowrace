@@ -129,8 +129,8 @@
           </a>
           <ul class="treeview-menu">
               <li class="{% block myContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Moje zawody</a></li>
-              <li class="{% block activeContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Nadchodzące</a></li>
-              <li class="{% block passContestsClassMenu %}{% endblock %}"><a href="{{ path('contests_switcher') }}"><i class="fa fa-circle-o"></i> Minione</a></li>
+              <li class="{% block activeContestsClassMenu %}{% endblock %}"><a href="{{ path('active_contests') }}"><i class="fa fa-circle-o"></i> Nadchodzące</a></li>
+              <li class="{% block endedContestsClassMenu %}{% endblock %}"><a href="{{ path('ended_contests') }}"><i class="fa fa-circle-o"></i> Zakończone</a></li>
           </ul>
         </li>
         <li class="{% block statisticClassMenu %}{% endblock %}">

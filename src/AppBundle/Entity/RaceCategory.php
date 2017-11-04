@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -29,12 +30,15 @@ class RaceCategory
     private $name;
 
     /**
-     * @var Race
+     * @var Race[]|ArrayCollection
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Race", inversedBy="categories")
-     * @ORM\JoinColumn(name="race_id", referencedColumnName="id")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Race", mappedBy="categories")
      */
-    private $race;
+    private $races;
+
+    public function __construct() {
+        $this->races = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -71,24 +75,42 @@ class RaceCategory
     }
 
     /**
-     * @return Race
+     * @return Race[]
      */
-    public function getRace()
+    public function getRaces()
     {
-        return $this->race;
+        return $this->races;
+    }
+
+    public function hasRace(Race $race){
+        foreach ($this->races as $r){
+            if($race->getId() == $r->getId()){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * @param Race $race
      */
-    public function setRace($race)
+    public function addRace(Race $race){
+        if(!$this->hasRace($race)){
+            $this->races->add($race);
+        }
+    }
+
+    /**
+     * @param Race[] $races
+     */
+    public function setRaces($races)
     {
-        $this->race = $race;
+        $this->races = $races;
     }
 
     function __toString()
     {
-        return $this->name;
+        return $this->name ? $this->name: '';
     }
 }
 

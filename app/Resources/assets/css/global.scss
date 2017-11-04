@@ -171,3 +171,8 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 .select2-selection__choice{
   color: black !important;
 }
+
+.clickable-row:hover{
+  background-color: #eeecec !important;
+  cursor: pointer;
+}
