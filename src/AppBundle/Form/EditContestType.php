@@ -21,6 +21,7 @@ class EditContestType extends AbstractType
             ->add('city')
             ->add('postCode')
             ->add('street')
+            ->add('notice')
             ->add('country', CountryType::class)
             ->add('startTime',DateTimeType::class, array(
                 'years' => range(2017, 2027),

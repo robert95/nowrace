@@ -189,6 +189,17 @@ class RaceRunner
     }
 
     /**
+     * @return string
+     */
+    public function getPrettyTime(){
+       if($this->endTime != null && $this->startTime != null){
+           $diffInSeconds = $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
+           return sprintf('%02d:%02d:%02d', ($diffInSeconds/3600),($diffInSeconds/60%60), $diffInSeconds%60);
+       }
+       return '00:00:00';
+    }
+
+    /**
      * @return Runner
      */
     public function getRunner()
@@ -240,7 +251,7 @@ class RaceRunner
      * @param RaceRun $raceRun
      * @return RaceRun[]|ArrayCollection
      */
-    public function addRaceRunners(RaceRun $raceRun){
+    public function addRaceRun(RaceRun $raceRun){
         $this->raceRun->add($raceRun);
         return $this->raceRun;
     }

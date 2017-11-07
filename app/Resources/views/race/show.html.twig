@@ -1,40 +1,228 @@
-{% extends 'base.html.twig' %}
+{% extends(":default:inside_index.html.twig") %}
+{% set pageName = race.name %}
+{% block contestClassMenu %}active{% endblock %}
+{% set company = race.contest.company %}
+{% block main %}
+    {{ parent() }}
+    <section class="content">
+        <div class="row">
+            <!-- /.col -->
+            <div class="col-md-12">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#race-info" data-toggle="tab" aria-expanded="true">Informacje</a></li>
+                        <li class=""><a href="#race-track" data-toggle="tab" aria-expanded="false">Trasa</a></li>
+                        <li class=""><a href="#race-runners" data-toggle="tab" aria-expanded="false">Zawodnicy</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="race-info">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="clearfix" style="margin-bottom: 20px">
+                                        <div class="pull-right">
+                                            {% if race.canSign(app.user) %}<a href="#" class="btn btn-lg btn-success">Zapisz się!</a>{% endif %}
+                                            {% if race.live %}<a href="#" class="btn btn-lg btn-danger">Oglądaj na żywo!</a>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="small-box bg-aqua">
+                                                <div class="inner">
+                                                    <h3>{{ race.distance }} km</h3>
+                                                    <p>Dystans</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </div>
+                                                <a href="#" class="small-box-footer">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="small-box bg-green">
+                                                <div class="inner">
+                                                    <h3>{{ race.raceRunners | length }}</h3>
+                                                    <p>Zawodników</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </div>
+                                                <a href="#" class="small-box-footer">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="small-box bg-red">
+                                                <div class="inner">
+                                                    <h3>{{ race.maxRunners - race.raceRunners | length }}</h3>
+                                                    <p>Wolne miejsca</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </div>
+                                                <a href="#" class="small-box-footer">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="small-box bg-yellow">
+                                                <div class="inner">
+                                                    {% if race.startTime > date() %}
+                                                        <h3>{{ (date(race.startTime).diff(date())).days }}</h3>
+                                                        <p>Dni do startu</p>
+                                                    {% else %}
+                                                        <h3>0</h3>
+                                                        <p>Dni do startu</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </div>
+                                                <a href="#" class="small-box-footer">
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="box box-primary box-solid">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title"><strong>{{ race.name }}</strong></h3>
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <div class="box-body">
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-map-marker margin-r-5"></i> Zawody</strong>
+                                                    <p class="text-muted">{{ race.contest.name }}</p>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-map-marker margin-r-5"></i> Organizator</strong>
+                                                    <p class="text-muted">{{ race.contest.company.name }}</p>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-map-marker margin-r-5"></i> Lokalizacja</strong>
+                                                    <p class="text-muted">{{ race.contest.adress }}</p>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-phone margin-r-5"></i> Telefon</strong>
+                                                    <p class="text-muted">{{ race.contest.company.phone }}</p>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-internet-explorer margin-r-5"></i> WWW</strong>
+                                                    <p class="text-muted"><a href="http://{{ race.contest.www }}">{{ race.contest.www }}</a></p>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <strong><i class="fa fa-file-text-o margin-r-5"></i> Notatka</strong>
+                                                    <p>{{ race.contest.notice }}</p>
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.box-body -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
 
-{% block body %}
-    <h1>Race</h1>
+                        <div class="tab-pane" id="race-track">
+                            tu będzie trasa
+                        </div>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ race.id }}</td>
-            </tr>
-            <tr>
-                <th>Starttime</th>
-                <td>{% if race.startTime %}{{ race.startTime|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Distance</th>
-                <td>{{ race.distance }}</td>
-            </tr>
-            <tr>
-                <th>Maxrunners</th>
-                <td>{{ race.maxRunners }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('race_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('race_edit', { 'id': race.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+                        <div class="tab-pane" id="race-runners">
+                            {% if race.raceRunners | length > 0 %}
+                                <table id="example" class="table table-striped table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                    <tr>
+                                        <th>Nr</th>
+                                        <th>Imie</th>
+                                        <th>Nazwisko</th>
+                                        <th>Płeć</th>
+                                        <th>Klub</th>
+                                        <th>Rok ur.</th>
+                                        <th>Kategorie</th>
+                                        <th>Miejsce</th>
+                                        <th>Czas</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Nr</th>
+                                        <th>Imie</th>
+                                        <th>Nazwisko</th>
+                                        <th>Płeć</th>
+                                        <th>Klub</th>
+                                        <th>Rok ur.</th>
+                                        <th>Kategorie</th>
+                                        <th>Miejsce</th>
+                                        <th>Czas</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    {% for runner in race.raceRunners %}
+                                        <tr>
+                                            <td>{{ runner.startNumber }}</td>
+                                            <td>{{ runner.runner.name }}</td>
+                                            <td>{{ runner.runner.surname }}</td>
+                                            <td>
+                                                {% if runner.runner.gender == 1 %}
+                                                    kobieta
+                                                {% else %}
+                                                    mężczyzna
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ runner.runner.club }}</td>
+                                            <td>{{ runner.runner.birthDate | date("Y") }}</td>
+                                            <td>K20, K30</td>
+                                            <td>{{ runner.finishPlace }}</td>
+                                            <td>{{ runner.prettyTime }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div>
+                                    <h4>Nikt się jeszcze nie zapisał na ten bieg, bądź pierwszy!</h4>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable( {
+                "language": {
+                    "url": "/template/plugins/datatables/Polish.json"
+                },
+                "columnDefs": [
+                    {
+                        "targets": [ 50 ],
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ]
+            } );
+        } );
+    </script>
+{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" href="/template/plugins/datatables/dataTables.bootstrap.css">
 {% endblock %}

@@ -100,6 +100,13 @@ class Contest
     private $races;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="notice", type="text", nullable=true)
+     */
+    private $notice;
+
+    /**
      * Contest constructor.
      */
     public function __construct()
@@ -347,6 +354,22 @@ class Contest
     public function getAdress(){
         return $this->city.' '.$this->postCode.''.
                ', '.$this->street.', '.$this->country;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotice()
+    {
+        return $this->notice;
+    }
+
+    /**
+     * @param string $notice
+     */
+    public function setNotice($notice)
+    {
+        $this->notice = $notice;
     }
 }
 

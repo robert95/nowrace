@@ -68,11 +68,8 @@ class RaceController extends Controller
      */
     public function showAction(Race $race)
     {
-        $deleteForm = $this->createDeleteForm($race);
-
         return $this->render('race/show.html.twig', array(
             'race' => $race,
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 

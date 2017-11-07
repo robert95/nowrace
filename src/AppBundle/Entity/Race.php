@@ -257,8 +257,49 @@ class Race
      * @return RaceRunner[]|ArrayCollection
      */
     public function addRaceRunners(RaceRunner $raceRunner){
-        $this->raceRunners->add($raceRunner);
+        if(!$this->hasRunner($raceRunner->getRunner())){
+            $this->raceRunners->add($raceRunner);
+        }
         return $this->raceRunners;
+    }
+
+    public function hasRunner(Runner $runner){
+        foreach ($this->raceRunners as $raceRunner){
+            if($raceRunner->getRunner()->getId() == $runner->getId()){
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * @return bool
+     */
+    public function isLive(){
+        return $this->startTime > (new \DateTime())
+               && !$this->isEnded();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnded(){
+        if($this->startTime > (new \DateTime())) return false;
+        foreach ($this->raceRunners as $runner){
+            if(!$runner->getEndTime()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canSign(User $user){
+        return ($user->hasRole('ROLE_RUNNER')
+                && $this->maxRunners < count($this->raceRunners->toArray())
+                && $this->hasRunner($user->getRunner()));
     }
 }
 
