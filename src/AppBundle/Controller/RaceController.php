@@ -5,7 +5,12 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Contest;
 use AppBundle\Entity\Race;
 use AppBundle\Entity\RaceCategory;
+use AppBundle\Entity\RaceRunner;
+use AppBundle\Entity\Track;
+use AppBundle\Entity\TrackElem;
+use AppBundle\Entity\TrackPoint;
 use AppBundle\Form\EditRaceType;
+use AppBundle\Form\SignForRaceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -70,6 +75,7 @@ class RaceController extends Controller
     {
         return $this->render('race/show.html.twig', array(
             'race' => $race,
+            'form' => $this->createSignForm($race)->createView(),
         ));
     }
 
@@ -106,6 +112,15 @@ class RaceController extends Controller
      */
     public function deleteAction(Request $request, Race $race)
     {
+        if($race->getContest()->getCompany() != $this->getUser()->getCompany()){
+            return $this->redirectToRoute('company_contests');
+        }
+
+        if($race->getStartTime() < new \DateTime()){
+            $this->addFlash('warning', 'Nie możesz usunąć wyścigów, której już się zaczęły!!');
+            return $this->redirect($request->server->get('HTTP_REFERER'));
+        }
+
         $form = $this->createDeleteForm($race);
         $form->handleRequest($request);
 
@@ -150,11 +165,12 @@ class RaceController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $this->addNewTrackFromJSON(json_decode($form->get('route')->getData(), true), $race);
             $em->persist($race);
             $em->flush();
 
-            $this->addFlash('success', 'Wyścig został poprawnie dodany!');
-            return $this->redirectToRoute('contest_edit', array('id' => $contest->getId()));
+            $this->addFlash('success', 'Wyścig został poprawnie dodany do zawodów!');
+            return $this->redirectToRoute('contest_show', array('id' => $contest->getId()));
         }
 
         return $this->render('race/add.html.twig', array(
@@ -162,7 +178,6 @@ class RaceController extends Controller
             'form' => $form->createView(),
         ));
     }
-
 
     /**
      * Edit race entity.
@@ -176,12 +191,17 @@ class RaceController extends Controller
             return $this->redirectToRoute('company_contests');
         }
 
+        if($race->getStartTime() < new \DateTime()){
+            $this->addFlash('warning', 'Nie możesz edytować wyścigów, której już się zaczęły!!');
+            return $this->redirect($request->server->get('HTTP_REFERER'));
+        }
+
         $form = $this->createForm(EditRaceType::class, $race);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($race);
+            $this->editTrackFromJSON(json_decode($form->get('route')->getData(), true), $race);
             $em->flush();
 
             $this->addFlash('success', 'Wyścig został poprawnie edytowany!');
@@ -192,5 +212,81 @@ class RaceController extends Controller
             'race' => $race,
             'form' => $form->createView(),
         ));
+    }
+
+    public function addNewTrackFromJSON($routePoints, Race $race){
+        $em = $this->getDoctrine()->getManager();
+        $track = new Track();
+        $track->setName('TRASA - '.$race->getName());
+        $track->addRace($race);
+
+        $trackElem = new TrackElem();
+        $track->addTrackElems($trackElem);
+
+        foreach($routePoints as $key => $point){
+            $trackElem->addPoint(new TrackPoint($key, $point['lat'], $point['lng']));
+        }
+
+        $em->persist($track);
+    }
+
+    public function editTrackFromJSON($routePoints, Race $race){
+        $em = $this->getDoctrine()->getManager();
+
+        $trackElem = $race->getTrack()->getTrackElems()[0];
+        foreach ($trackElem->getPoints() as $point){
+            $em->remove($point);
+        }
+
+        foreach($routePoints as $key => $point){
+            $trackElem->addPoint(new TrackPoint($key, $point['lat'], $point['lng']));
+        }
+
+        $em->flush();
+    }
+
+    /**
+     * @param Race $race
+     * @return \Symfony\Component\Form\Form
+     */
+    public function createSignForm(Race $race){
+        return  $this->createForm(SignForRaceType::class, new RaceRunner(), array(
+            'race' => $race,
+        ));
+    }
+
+    /**
+     * Display live race.
+     *
+     * @Route("/live/{id}", name="race_live")
+     * @Method("GET")
+     */
+    public function liveAction(Race $race)
+    {
+        return $this->render('race/live.html.twig', array(
+            'race' => $race
+        ));
+    }
+
+    /**
+     * Set cords for runner race.
+     *
+     * @Route("/set-cords/{id}", name="race_set_cords")
+     * @Method("GET")
+     */
+    public function setCordsAction(RaceRunner $raceRunner)
+    {
+
+        $cords = array(
+            array(
+                'id' => 23,
+                'lat' => 51.757135,
+                'lng' => 18.098669,
+                'timestamp' => (new \DateTime())->getTimestamp()
+            )
+        );
+        $fp = fopen('results.json', 'w');
+        fwrite($fp, json_encode($cords));
+        fclose($fp);
     }
 }

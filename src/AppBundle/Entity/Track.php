@@ -39,7 +39,7 @@ class Track
     /**
      * @var TrackElem[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TrackElem", mappedBy="track")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TrackElem", mappedBy="track", cascade={"persist", "remove"})
      */
     private $trackElems;
 
@@ -108,6 +108,7 @@ class Track
      */
     public function addRace(Race $race){
         $this->races->add($race);
+        $race->setTrack($this);
         return $this->races;
     }
 
@@ -133,6 +134,7 @@ class Track
      */
     public function addTrackElems(TrackElem $trackElem){
         $this->trackElems->add($trackElem);
+        $trackElem->setTrack($this);
         return $this->trackElems;
     }
 }

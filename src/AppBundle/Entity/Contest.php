@@ -113,6 +113,8 @@ class Contest
     {
         $this->races = new ArrayCollection();
         $this->country = 'PL';
+        $this->startTime = new \DateTime();
+        $this->endTime = new \DateTime();
     }
 
 

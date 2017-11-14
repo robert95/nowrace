@@ -42,8 +42,8 @@
                                     <td>{{ contest.company.name }}</td>
                                     <td>{{ contest.name }}</td>
                                     <td>{{ contest.adress }}</td>
-                                    <td>{{ contest.startTime | date("m/d/Y H:i") }}</td>
-                                    <td>{{ contest.endTime | date("m/d/Y H:i") }}</td>
+                                    <td>{{ contest.startTime | date("d/m/Y H:i") }}</td>
+                                    <td>{{ contest.endTime | date("d/m/Y H:i") }}</td>
                                     <td>{{ contest.races | length }}</td>
                                 </tr>
                             {% endfor %}

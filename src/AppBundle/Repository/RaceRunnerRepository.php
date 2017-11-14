@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\Race;
 
 /**
  * RaceRunnerRepository
@@ -10,4 +11,14 @@ namespace AppBundle\Repository;
  */
 class RaceRunnerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getNextStartNumber(Race $race){
+        $maxNb = $this->createQueryBuilder('rr')
+            ->select('max(rr.startNumber)')
+            ->where('rr.race = :race')
+            ->setParameter('race', $race)
+            ->getQuery()
+            ->getArrayResult()[0][1];
+
+        return $maxNb ? $maxNb+1 : 1;
+    }
 }

@@ -68,7 +68,7 @@ class Race
     /**
      * @var Track
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Track", inversedBy="races")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Track", inversedBy="races", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="track_id", referencedColumnName="id")
      *
      */
@@ -77,7 +77,7 @@ class Race
     /**
      * @var RaceRunner[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\RaceRunner", mappedBy="race")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\RaceRunner", mappedBy="race", cascade={"all"})
      */
     private $raceRunners;
 
@@ -178,6 +178,9 @@ class Race
     public function setContest($contest)
     {
         $this->contest = $contest;
+        if(!$this->startTime){
+            $this->startTime = $contest->getStartTime();
+        }
     }
 
     /**
@@ -259,6 +262,7 @@ class Race
     public function addRaceRunners(RaceRunner $raceRunner){
         if(!$this->hasRunner($raceRunner->getRunner())){
             $this->raceRunners->add($raceRunner);
+            $raceRunner->setRace($this);
         }
         return $this->raceRunners;
     }
@@ -275,7 +279,7 @@ class Race
      * @return bool
      */
     public function isLive(){
-        return $this->startTime > (new \DateTime())
+        return $this->startTime < (new \DateTime())
                && !$this->isEnded();
     }
 
@@ -297,9 +301,28 @@ class Race
      * @return bool
      */
     public function canSign(User $user){
-        return ($user->hasRole('ROLE_RUNNER')
-                && $this->maxRunners < count($this->raceRunners->toArray())
-                && $this->hasRunner($user->getRunner()));
+        return $user->hasRole('ROLE_RUNNER')
+                && $this->maxRunners >= count($this->raceRunners->toArray())
+                && $this->startTime > (new \DateTime())
+                && !$this->hasRunner($user->getRunner());
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canSignOut(User $user){
+        return $this->isSign($user)
+            && $this->startTime > (new \DateTime());
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function isSign(User $user){
+        return $user->hasRole('ROLE_RUNNER')
+            && $this->hasRunner($user->getRunner());
     }
 }
 

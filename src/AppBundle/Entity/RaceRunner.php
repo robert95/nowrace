@@ -32,21 +32,21 @@ class RaceRunner
     /**
      * @var int
      *
-     * @ORM\Column(name="finishPlace", type="integer")
+     * @ORM\Column(name="finishPlace", type="integer", nullable=true)
      */
     private $finishPlace;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startTime", type="datetime")
+     * @ORM\Column(name="startTime", type="datetime", nullable=true)
      */
     private $startTime;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="endTime", type="datetime")
+     * @ORM\Column(name="endTime", type="datetime", nullable=true)
      */
     private $endTime;
 
@@ -74,11 +74,19 @@ class RaceRunner
     private $raceRun;
 
     /**
+     * @var RaceCategory[]|ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\RaceCategory")
+     */
+    private $categories;
+
+    /**
      * RaceRunner constructor.
      */
     public function __construct()
     {
         $this->raceRun = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
 
@@ -196,7 +204,7 @@ class RaceRunner
            $diffInSeconds = $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
            return sprintf('%02d:%02d:%02d', ($diffInSeconds/3600),($diffInSeconds/60%60), $diffInSeconds%60);
        }
-       return '00:00:00';
+       return '-';
     }
 
     /**
@@ -255,5 +263,31 @@ class RaceRunner
         $this->raceRun->add($raceRun);
         return $this->raceRun;
     }
+
+    /**
+     * @return RaceCategory[]|ArrayCollection
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param RaceCategory[]|ArrayCollection $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
+    /**
+     * @param RaceCategory $raceCategory
+     * @return RaceRun[]|ArrayCollection
+     */
+    public function addCategories(RaceCategory $raceCategory){
+        $this->categories->add($raceCategory);
+        return $this->raceRun;
+    }
+
 }
 

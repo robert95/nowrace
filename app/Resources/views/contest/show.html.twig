@@ -85,7 +85,7 @@
 
                                                 <h3 class="timeline-header">
                                                     <a href="{{ path('race_show', {'id': race.id}) }}">{{ race.name }}</a>
-                                                    {% if race.live %}<a class="btn btn-danger btn-xs" href="#">LIVE - Oglądaj!</a>{% endif %}
+                                                    {% if race.live %}<a class="btn btn-danger btn-xs" href="{{ path('race_live', {'id': race.id}) }}">LIVE - Oglądaj!</a>{% endif %}
                                                 </h3>
 
                                                 <div class="timeline-body">
@@ -106,8 +106,9 @@
                                                 </div>
                                                 <div class="timeline-footer">
                                                     <a class="btn btn-primary btn-xs" href="{{ path('race_show', {'id': race.id}) }}">Zobacz więcej</a>
-                                                    {% if race.canSign(app.user) %}<a class="btn btn-success btn-xs" href="#">Zapisz się!</a>{% endif %}
-                                                    {% if race.live %}<a class="btn btn-danger btn-xs" href="#">Oglądaj!</a>{% endif %}
+                                                    {% if race.canSign(app.user) %}<a class="btn btn-success btn-xs" href="{{ path('race_show', {'id': race.id}) }}">Zapisz się!</a>{% endif %}
+                                                    {% if race.canSignOut(app.user) %}<a class="btn btn-danger btn-xs" href="{{ path('signout_from_race', {'id': race.id}) }}">Wypisz się</a>{% endif %}
+                                                    {% if race.live %}<a class="btn btn-danger btn-xs" href="{{ path('race_live', {'id': race.id}) }}">Oglądaj!</a>{% endif %}
                                                 </div>
                                             </div>
                                         </li>

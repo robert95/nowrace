@@ -47,7 +47,7 @@ class TrackElem
     /**
      * @var TrackPoint[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TrackPoint", mappedBy="trackElem")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TrackPoint", mappedBy="trackElem", cascade={"persist", "remove"})
      */
     private $points;
 
@@ -57,6 +57,8 @@ class TrackElem
     public function __construct()
     {
         $this->points = new ArrayCollection();
+        $this->partOfRace = true;
+        $this->orderNumber = 1;
     }
 
     /**
@@ -155,6 +157,7 @@ class TrackElem
      */
     public function addPoint(TrackPoint $trackPoint){
         $this->points->add($trackPoint);
+        $trackPoint->setTrackElem($this);
         return $this->points;
     }
 }

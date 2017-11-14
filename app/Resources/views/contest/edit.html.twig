@@ -36,19 +36,21 @@
                     <tbody>
                     {% for race in contest.races %}
                         <tr>
-                            <td>{{ race.startTime | date("m/d/Y H:i") }}</td>
+                            <td>{{ race.startTime | date("d/m/Y H:i") }}</td>
                             <td>{{ race.distance }}</td>
                             <td>{{ race.raceRunners | length }} / {{ race.maxRunners }}</td>
                             <td>
-                                <a href="#">
+                                <a href="{{ path('race_show', {'id': race.id} ) }}">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </a>
-                                <a href="{{ path('race_edit', {'id': race.id} ) }}">
-                                    <i class="fa fa-edit" aria-hidden="true"></i>
-                                </a>
-                                <a href="{{ path('race_delete', {'id': race.id} ) }}">
-                                    <i class="fa fa-remove" aria-hidden="true"></i>
-                                </a>
+                                {% if date(race.startTime) > date() %}
+                                    <a href="{{ path('race_edit', {'id': race.id} ) }}">
+                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                    </a>
+                                    <a href="{{ path('race_delete', {'id': race.id} ) }}">
+                                        <i class="fa fa-remove" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

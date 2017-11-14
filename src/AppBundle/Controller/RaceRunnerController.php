@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Race;
 use AppBundle\Entity\RaceRunner;
+use AppBundle\Form\SignForRaceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -132,5 +134,72 @@ class RaceRunnerController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Sign logged runner for race
+     *
+     * @Route("/sign-for-race/{id}", name="sign_for_race")
+     * @Method({"GET", "POST"})
+     */
+    public function signMyForRace(Request $request, Race $race)
+    {
+        $em = $this->getDoctrine()->getManager();
+        if($race->getStartTime() < (new \DateTime())){
+            $this->addFlash('warning', 'Nie możesz zapisać się na bieg, który już się rozpoczął!.');
+        }else{
+            $runner = $this->getUser()->getRunner();
+            if(!$runner){
+                $this->addFlash('warning', 'Organizacje nie mogą zapisywać się na biegi!');
+                return $this->redirect($request->server->get('HTTP_REFERER'));
+            }
+
+            $raceRunner = new RaceRunner();
+            $form = $this->createForm(SignForRaceType::class, $raceRunner, array(
+                'race' => $race,
+            ));
+            $form->handleRequest($request);
+            $startNumber = $em->getRepository(RaceRunner::class)->getNextStartNumber($race);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $raceRunner->setRunner($runner);
+                $raceRunner->setStartNumber($startNumber);
+                $race->addRaceRunners($raceRunner);
+                $em->flush();
+            }
+
+            $this->addFlash('success', 'Poprawnie zapisano na bieg z numerem startowym: '.$startNumber);
+        }
+
+        return $this->redirect($request->server->get('HTTP_REFERER'));
+    }
+
+    /**
+     * Sign out logged runner from race
+     *
+     * @Route("/signout-from-race/{id}", name="signout_from_race")
+     * @Method({"GET", "POST"})
+     */
+    public function signOutFromRace(Request $request, Race $race)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $raceRunner = $em->getRepository(RaceRunner::class)->findOneBy(array(
+            'race' => $race,
+            'runner' => $this->getUser()->getRunner(),
+        ));
+
+        if($raceRunner){
+            if($race->getStartTime() > (new \DateTime())){
+                $this->addFlash('success', 'Poprawnie wypisana z biegu!');
+                $em->remove($raceRunner);
+                $em->flush();
+            }else{
+                $this->addFlash('warning', 'Nie można wypisać się z biegu, ponieważ już się rozpoczął.');
+            }
+        }else{
+            $this->addFlash('danger', 'Nie można wypisać się z biegu, na który nie jest się zapisany.');
+        }
+
+        return $this->redirect($request->server->get('HTTP_REFERER'));
     }
 }

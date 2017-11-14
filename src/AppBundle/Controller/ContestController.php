@@ -129,7 +129,7 @@ class ContestController extends Controller
      */
     public function contestsSwitcherAction(Request $request)
     {
-        if($this->getUser()->hasRole("ROLE_RUNNER")) return $this->redirectToRoute('company_contests');
+        if($this->getUser()->hasRole("ROLE_RUNNER")) return $this->redirectToRoute('runner_contests');
         if($this->getUser()->hasRole("ROLE_COMPANY")) return $this->redirectToRoute('company_contests');
     }
 
@@ -216,8 +216,11 @@ class ContestController extends Controller
             $em->persist($contest);
             $em->flush();
 
-            $this->addFlash('success', 'Zawody zostały poprawnie dodane!');
-            return $this->redirectToRoute('company_contests');
+            $this->addFlash('success', 'Zawody zostały poprawnie dodane! Dodaj pierwszy wyścig do zawodów!');
+            return $this->redirectToRoute('race_add',
+                array(
+                    'id' => $contest->getId()
+                ));
         }
 
         return $this->render('contest/add.html.twig', array(
@@ -268,4 +271,23 @@ class ContestController extends Controller
             'contest' => $contest,
         ));
     }
+
+    /**
+     * Lists all contest for runner
+     *
+     * @Route("/runner-contests", name="runner_contests")
+     * @Method("GET")
+     */
+    public function runnerContestsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $contests = $em->getRepository('AppBundle:Contest')
+                    ->findForRunner($this->getUser()->getRunner());
+
+        return $this->render('contest/runner-contests.html.twig', array(
+            'contests' => $contests,
+        ));
+    }
+
 }

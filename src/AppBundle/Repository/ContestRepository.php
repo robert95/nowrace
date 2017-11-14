@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Runner;
+
 /**
  * ContestRepository
  *
@@ -10,4 +12,13 @@ namespace AppBundle\Repository;
  */
 class ContestRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findForRunner(Runner $runner){
+        return $this->createQueryBuilder('c')
+                ->join('c.races', 'r')
+                ->join('r.raceRunners', 'rr')
+                ->where('rr.runner = :runner')
+                ->setParameter('runner', $runner)
+                ->getQuery()
+                ->getResult();
+    }
 }

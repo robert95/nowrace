@@ -59,6 +59,21 @@ class TrackPoint
     private $trackElem;
 
     /**
+     * TrackPoint constructor.
+     * @param int $orderNumber
+     * @param string $lat
+     * @param string $lng
+     */
+    public function __construct($orderNumber, $lat, $lng)
+    {
+        $this->orderNumber = $orderNumber;
+        $this->lat = $lat;
+        $this->lng = $lng;
+        $this->type = "PART_OF_TRACK";
+    }
+
+
+    /**
      * Get id
      *
      * @return int
