@@ -69,7 +69,7 @@ class RaceRunner
     /**
      * @var RaceRun[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\RaceRun", mappedBy="raceRunner")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\RaceRun", mappedBy="raceRunner", cascade={"persist", "remove"})
      */
     private $raceRun;
 
@@ -261,6 +261,7 @@ class RaceRunner
      */
     public function addRaceRun(RaceRun $raceRun){
         $this->raceRun->add($raceRun);
+        $raceRun->setRaceRunner($this);
         return $this->raceRun;
     }
 

@@ -33,6 +33,7 @@
         var map;
         var markers = [];
         var runners = [];
+        var runnersInfo = [];
         var route;
         var geoJson;
         var countOfMarkers = {{ race.track.trackElems[0].points | length }};
@@ -124,6 +125,12 @@
             });
 
             runners[id] = marker;
+            runnersInfo[id] = {
+                last_run_point_id: -1,
+                last_timestamp: -1,
+                categories: ['K20, K30'],
+                name: 'Jan Kowalski(PL) - 1995'
+            };
         }
 
         function drawRoute(){
@@ -180,7 +187,7 @@
             geoJson.features.push(polylineFeature);
         }
 
-        function getClosestPointOnPolyline(lng, lat){
+        function getClosestPointOnPolyline(lat, lng){
             var line = turf.lineString(geoJson.features[0].geometry.coordinates);
             var pt = turf.point([lng, lat]);
             var snapped = turf.pointOnLine(line, pt);
@@ -195,17 +202,25 @@
         }
 
         function updateRunnersPosition(){
-            $.getJSON( '{{ asset('results.json') }}' , function( data ) {
+            $.getJSON( '/results.php?id=' + {{ race.id }} , function( data ) {
                for(var k = 0; k < data.length; k++){
                    var runner = data[k];
-                   moveMarkerToPosition(runners[runner.id], {lat: runner.lat, lng: runner.lng}, 1000);
+                   if(runnersInfo[runner.id].last_run_point_id !== runner.run_point_id){
+                       var duration = 1;
+                       if(runnersInfo[runner.id].last_timestamp !== -1){
+                           duration = (runner.timestamp - runnersInfo[runner.id].last_timestamp)*1000;
+                       }
+                       moveMarkerToPosition(runners[runner.id], getClosestPointOnPolyline(runner.lat, runner.lng), duration);
+                       runnersInfo[runner.id].last_timestamp = runner.timestamp;
+                       runnersInfo[runner.id].last_run_point_id = runner.run_point_id;
+                   }
                }
             });
         }
     </script>
     <script>
         $(document).ready(function() {
-            //setInterval(function(){ updateRunnersPosition() }, 1000);
+            setInterval(function(){ updateRunnersPosition() }, 1500);
         } );
     </script>
 {% endblock %}

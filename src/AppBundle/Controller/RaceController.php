@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Contest;
 use AppBundle\Entity\Race;
 use AppBundle\Entity\RaceCategory;
+use AppBundle\Entity\RaceRun;
 use AppBundle\Entity\RaceRunner;
 use AppBundle\Entity\Track;
 use AppBundle\Entity\TrackElem;
@@ -14,6 +15,7 @@ use AppBundle\Form\SignForRaceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Race controller.
@@ -274,19 +276,59 @@ class RaceController extends Controller
      * @Route("/set-cords/{id}", name="race_set_cords")
      * @Method("GET")
      */
-    public function setCordsAction(RaceRunner $raceRunner)
+    public function setCordsAction(Request $request, RaceRunner $raceRunner)
     {
+        $em = $this->getDoctrine()->getManager();
 
-        $cords = array(
-            array(
-                'id' => 23,
-                'lat' => 51.757135,
-                'lng' => 18.098669,
-                'timestamp' => (new \DateTime())->getTimestamp()
+        $raceRun = new RaceRun();
+        $raceRun->setDatetime(new \DateTime());
+        $raceRun->setLat($request->get('lat'));
+        $raceRun->setLng($request->get('lng'));
+        $raceRunner->addRaceRun($raceRun);
+
+        $em->flush();
+
+        $connection = $em->getConnection();
+        $statement = $connection->prepare("SELECT RR.*, RaRu.runner_id
+            FROM race_run RR, race_runner RaRu
+            WHERE RR.time = (
+                SELECT MAX(RR2.time)
+                FROM race_run RR2
+                WHERE RR2.race_runner_id = RR.race_runner_id
             )
-        );
-        $fp = fopen('results.json', 'w');
-        fwrite($fp, json_encode($cords));
-        fclose($fp);
+            AND 
+            (
+                RR.race_runner_id = RaRu.id
+                AND
+                RaRu.race_id = :race_id
+            )");
+        $statement->bindValue('race_id', $raceRunner->getRace()->getId());
+        $statement->execute();
+        $results = $statement->fetchAll();
+
+        $resultsToSave = [];
+        foreach ($results as $result){
+            $resultsToSave[] = array(
+                'run_point_id' => $result['id'],
+                'id' => $result['runner_id'],
+                'lat' => $result['lat'],
+                'lng' => $result['lng'],
+                'timestamp' => (new \DateTime($result['time']))->getTimestamp()
+            );
+        }
+
+//        $fp = fopen('results/results_'.$raceRunner->getRace()->getId().'.json', 'w');
+//        fwrite($fp, json_encode($resultsToSave));
+//        fclose($fp);
+
+        $statement = $connection->prepare("
+            DELETE FROM live WHERE race_id = :race_id;
+            INSERT INTO `live`(`race_id`, `positions`) VALUES (:race_id, :positions);
+        ");
+        $statement->bindValue('race_id', $raceRunner->getRace()->getId());
+        $statement->bindValue('positions', json_encode($resultsToSave));
+        $statement->execute();
+
+        return new Response('ok');
     }
 }
